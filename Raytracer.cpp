@@ -1,5 +1,8 @@
 #include <iostream>
 
+//Chapter 2 - vec3 class
+#include "vec3.h"
+
 int main()
 {
 	//Start  by generating ppm files
@@ -18,15 +21,15 @@ int main()
 	for (int j = ny-1; j >= 0; j--)	{
 		for (int i = 0; i < nx; i++) {
 
+      
 			//Generate float components from 0.0 to 1.0
-			float r = float(i) / float(nx);
-			float g = float(j) / float(ny);
-			float b = 0.2;
+			//Chp 2 - bundle into vector
+			vec3 col(float(i) / float(nx), float(j) / float(ny), 0.2);
 
 			//Convert to integer format suitable for ppm
-			int ir = int(255.99 * r);
-			int ig = int(255.99 * b);
-			int ib = int(255.99 * g);
+			int ir = int(255.99 * col.r());
+			int ig = int(255.99 * col.g());
+			int ib = int(255.99 * col.b());
 
 			//Output in format R G B
 			std::cout << ir << " " << ig << " " << ib << "\n";
