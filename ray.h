@@ -1,4 +1,6 @@
 #include "vec3.h"
+#pragma once
+
 
 /* A ray can be seen as a function p(t) = A + t*B
 * Where p is some 3D Position alonge a line

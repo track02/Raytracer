@@ -1,6 +1,8 @@
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>
+#pragma once
+
 
 class vec3  {
 

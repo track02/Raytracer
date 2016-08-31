@@ -1,81 +1,14 @@
 #include <iostream>
 #include <math.h>
+#include "sphere.h"
+#include "hitable_list.h"
+#include <float.h>
 
-#include "ray.h"
-
-//Chapter 3 - using ray.h
 
 /*
 * Basic aim is to send rays through pixels and compute the color seen in that direction
 * Calculate which ray goes from the eye to a pixel, compute what that ray intersects and
 * the compute a colour for that intersection point
-* for now we'll have a blank scene and with the rays hitting the background of the image
-*/
-
-//Chapter 4 - adding a sphere
-
-/*
-* equation for a sphere centered at the origin, with radius R is x*x + y*y + z*z = R*R
-* so, for any (x,y,z) if x*x + y*y + z*z = R*R then (x,y,z) is on the sphere, otherwise its not
-* If the sphere is centered at (cx,cy,cz) then the formula differs slightly:
-* (x-cx)*(x-cx) + (y-cy)(y-cy) + (z-cz)(z-cz) = R*R
-*
-* We'll use our vec3 class to bundle values together and to simplify the equation
-* The vector from the spheres center C (cx,cy,cz) to some point p (x,y,z) is given by (p - C)
-* and dot product of((p-C),(p-C)) = (x-cx)*(x-cx) + (y-cy)(y-cy) + (z-cz)(z-cz)
-* 
-* So the equation for a sphere using vector is: dot((p-C),(p-C)) = R*R
-* Any point p that satisfies this equation lies on the sphere
-*
-* We want to know if our ray p(t) = A + t*B ever hits the sphere, 
-* if it does there is some t for which p(t) satisfies the sphere equation
-* so we are looking for a any t where this is true:
-*
-* dot((p(t) - c),(p(t) - c)) = R*R
-* dot((A + t*B - C), (A + t*B - C)) = R*R [Expanding out p(t)]
-*
-* If we expand the equation and move all terms to the left hand side, we get:
-* t*t*dot(B,B) + 2*t*dot(B,A-C) + dot(A-C,A-C) - R*R = 0
-*
-* We end up a quadratic equation with an unknown value of t
-* Solving for t, we can use the discriminant to determine the number of roots (+'ve -> 2 / -'ve -> 0 / 0 -> 1)
-*
-*  -----------------------------> 0 Roots
-*
-*  ---- o X o ------------------> 1 Root
-*     o        o       
-* ---X----------X----------------> 2 Roots      
-*    o          o      
-*     o        o        
-*        o  o             
-* 
-* We can hard code this test into a function, colouring red any pixel that hits
-* the sphere we place at -1 on the z-axis
-*
-*/
-
-
-//Chapter 5 (Pt.1) - Surface Normals
-
-/*
-* Use surface normals for shading, a surface normal is a vector perpendicular to the surface
-* by convention it points away from the surface. For conveniance, normals will be of unit-length (magnitude 1)
-* For our sphere the normal is in the direction of the ray-hitpoint - the center
-*
-*
-*        o  o 
-*     o        o       
-*    o     c----p-----> p-c
-*    o          o      
-*     o        o        
-*        o  o   
-*
-* 
-* A common trick to visualise normals assuming N is a unit length-vector 
-* with each component being between -1 and 1 is to map each component to the interval 0 to 1
-* and then map x/y/z to r/g/b
-* For the normal we need the hitpoint, not just whether the ray hit the sphere or not
-* we'll assume the smallest t is the closest hitpoint
 */
 
 
@@ -100,26 +33,21 @@ float hit_sphere(const vec3& center, float radius, const ray& r){
 //Known as linear interpolation (lerp), always take the form of (1-t)*start_value + t*end_value
 //Where t can be between 1 and 0
 
-//Chp 4 - Also checks for sphere hit
-//Chp 5 - Need to know where ray hit (t value) - to determine surface normal
-vec3 color(const ray& r){
-  
-  //Does the ray hit our centered sphere?
-  float t = hit_sphere(vec3(0,0,-1), 0.5, r);
-    
-  //Yes - determine surface normal and resulting colour vector
-  if (t > 0.0){  
-    //subtracting ray at point (t) from sphere center and normalising to create surface normal
-    //Basically a vector travelling in the opposite direction of the ray from the point the sphere is hit
-    vec3 N = unit_vector(r.point_at_parameter(t) - vec3(0,0,-1));
-    return 0.5*vec3(N.x()+1, N.y()+1, N.z()+1);
-  }
+vec3 color(const ray& r, hitable *world){
 
-  //No - determine background colour
-  vec3 unit_direction = unit_vector(r.direction()); //Convert the direction of the ray into a unit vector (magnitude of 1)
-  t = 0.5*(unit_direction.y() + 1.0); //Calculate some value for t depending on rays y value
-  return (1.0-t)*vec3(1.0,1.0,1.0) + t*vec3(0.5,0.7,1.0); //Create a vector using t (color)
+  hit_record rec; //Details of ray collision
+  
+  if(world->hit(r, 0.0, FLT_MAX, rec)) //If ray hits
+    return 0.5*vec3(rec.normal.x()+1, rec.normal.y()+1, rec.normal.z()+1); //Determine colour using normal
+  else{
+    //No - determine background colour
+    vec3 unit_direction = unit_vector(r.direction()); //Convert the direction of the ray into a unit vector (magnitude of 1)
+    float t = 0.5*(unit_direction.y() + 1.0); //Calculate some value for t depending on rays y value
+    return (1.0-t)*vec3(1.0,1.0,1.0) + t*vec3(0.5,0.7,1.0); //Create a vector using t (color)
+  }
 }
+
+
 
 int main()
 {
@@ -144,6 +72,12 @@ int main()
 	//Modify the direction by adding the horizontal / vertical vectors 
 	vec3 horizontal(4.0, 0.0, 0.0);
 	vec3 vertical(0.0, 2.0, 0.0);
+	
+	//List of 2 hitable objects
+	hitable* list[2]; 
+	list[0] = new sphere(vec3(0,0,-1), 0.5);
+	list[1] = new sphere(vec3(0, -100.5, -1), 100);
+	hitable *world = new hitable_list(list, 2); //Create a "world" containing these objects
 
 
 	//Loop through each column / row and write an RGB triplet
@@ -156,8 +90,8 @@ int main()
       
       //Create a ray from the origin with a direction determined by i/j values
       ray r(origin, lower_left_corner + u*horizontal + v * vertical);  
-      //Retrieve a colour for this ray
-      vec3 col = color(r);
+      //Retrieve a colour for this ray interacting with the world
+      vec3 col = color(r, world);
       
       //Convert to integer
       int ir = int(255.99 * col.r());
