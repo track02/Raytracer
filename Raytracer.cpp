@@ -2,7 +2,9 @@
 #include <math.h>
 #include "sphere.h"
 #include "hitable_list.h"
+#include "camera.h"
 #include <float.h>
+#include <random>
 
 
 /*
@@ -80,18 +82,46 @@ int main()
 	hitable *world = new hitable_list(list, 2); //Create a "world" containing these objects
 
 
+  //Chapter 6 - Anti-aliasing
+  /*
+  * Usually pictures taken with a camera do not have jagged edges
+  * this is because the edge pixels are a blend of foreground and background
+  * We can achieve the same effect by averaging a bunch of samples inside each pixel
+  *
+  * For a given pixel we have several samples within that pixel and send rays through each
+  * of the samples, the colours of these rays is then averaged
+  */
+  
+  camera cam;
+  
+  //Random no. generator for anti-aliasing samples
+  std::random_device rd; //random_device -> uniformly-distributed random no. generator
+  std::uniform_real_distribution<double> dist(0.0, 0.99); //a distribution of nos. between 0-0.99
+  
+  
+  int ns = 100; //no. of samples to take per pixel
+  
 	//Loop through each column / row and write an RGB triplet
 	//Top to bottom - left to right
 	for (int j = ny-1; j >= 0; j--)	{
 		for (int i = 0; i < nx; i++) {
 
-      float u = float(i) / float(nx);
-      float v = float(j) / float(ny);
+      //"empty" colour vector each pixel
+      vec3 col(0,0,0);
       
-      //Create a ray from the origin with a direction determined by i/j values
-      ray r(origin, lower_left_corner + u*horizontal + v * vertical);  
-      //Retrieve a colour for this ray interacting with the world
-      vec3 col = color(r, world);
+      //Sum up ray colours for each random sample at each pixel
+      for (int s = 0; s < ns; s++){
+      
+              float u = (float(i) + float(dist(rd))) / float(nx);
+              float v = (float(j) + float(dist(rd)))/ float(ny);
+              ray r = cam.get_ray(u, v);
+              
+              col += color(r, world);
+      
+      }
+      
+      //Divide colour by total no. samples for an average
+      col /= ns;
       
       //Convert to integer
       int ir = int(255.99 * col.r());
