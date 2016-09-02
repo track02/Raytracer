@@ -15,21 +15,6 @@
 */
 
 
-float hit_sphere(const vec3& center, float radius, const ray& r){
-  vec3 oc = r.origin() - center; //(A - C)
-  float a = dot(r.direction(), r.direction()); //(B*B)
-  float b = 2.0 * dot(oc, r.direction()); //2 * (B*(A-C))
-  float c = dot(oc, oc) - radius*radius; //((A-C)*(A-C)) - R*R
-  float discriminant = b*b - 4*a*c; //quadratic formula discriminant sqrt(b^2 - 4ac)
-    
-  if(discriminant < 0) //Ray hasn't hit, use -1 to indicate this
-    return -1.0; 
-  else //Discriminant >= 0, return smallest root (t) (assuming this is the closest)
-    return (-b - sqrt(discriminant)) / (2.0 * a);  //Remember quadratic formula -b (+-) sqrt(b*b - 4ac) / 2a
-  
-}
-
-
 /* Chapter 7 - Diffuse Materials
 * Now that objects and multiple rays per pixel are implemented we can start simulating materials
 * Beginning with diffuse (matte) materials, we will treat shapes and materials
@@ -73,6 +58,8 @@ float hit_sphere(const vec3& center, float radius, const ray& r){
 //This function returns our random point (s) that falls within the unit sphere
 vec3 random_in_unit_sphere() {
   vec3 p;
+  std::random_device rd; //random_device -> uniformly-distributed random no. generator
+  std::uniform_real_distribution<double> dist(0.0, 0.99); //a distribution of nos. between 0-0.99
   do{
     p = 2.0*vec3(drand48(), drand48(), drand48()) - vec3(1,1,1);
   }while (p.squared_length() >= 1.0);
@@ -87,17 +74,13 @@ vec3 random_in_unit_sphere() {
 
 
 //Chapter 7 - Updated to simulate diffuse materials
-vec3 color(const ray& r, hitable *world, int count){
+vec3 color(const ray& r, hitable *world){
 
   hit_record rec; //Details of ray collision
   
-  //Slight bug here - some reflected rays hit the object they are reflecting off not exactly at t=0 but
-  //instead at t=-0.000000001 or 0.0000000001 or whatever the floating point approximation is
-  //So we need to ignore hits that are very close to zero (0.0 -> 0.001)
-  //This solves the "shadow acne" problem
-  if(world->hit(r, 0.001, FLT_MAX, rec)){ //If ray hits
+  if(world->hit(r, 0.0, FLT_MAX, rec)){ //If ray hits
     vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-    return 0.5*color(ray(rec.p, target-rec.p), world, count+1);
+    return 0.5*color(ray(rec.p, target-rec.p), world);
   }
   else{
     //No - determine background colour
@@ -106,8 +89,6 @@ vec3 color(const ray& r, hitable *world, int count){
     return (1.0-t)*vec3(1.0,1.0,1.0) + t*vec3(0.5,0.7,1.0); //Create a vector using t (color)
   }
 }
-
-
 
 int main()
 {
@@ -166,21 +147,17 @@ int main()
       //Sum up ray colours for each random sample at each pixel
       for (int s = 0; s < ns; s++){
       
-              float u = (float(i) + float(drand48())) / float(nx);
-              float v = (float(j) + float(drand48()))/ float(ny);
+              float u = (float(i) + float(drand48()) / float(nx);
+              float v = (float(j) + float(drand48())/ float(ny);
               ray r = cam.get_ray(u, v);
               
-              col += color(r, world, 1);
+              col += color(r, world);
       
       }
       
       //Divide colour by total no. samples for an average
       col /= ns;
       
-      //Chapter 7 - Diffuse Materials
-      //Output image appears very dark - this is due to image viewers using gamma correction
-      //To a first approximation we can use gamma 2, which means raising the color to the power 1/2 (sqrt)
-      col = vec3(sqrt(col.r()), sqrt(col.g()), sqrt(col.b()));
       //Convert to integer
       int ir = int(255.99 * col.r());
       int ig = int(255.99 * col.g());
