@@ -73,8 +73,6 @@ float hit_sphere(const vec3& center, float radius, const ray& r){
 //This function returns our random point (s) that falls within the unit sphere
 vec3 random_in_unit_sphere() {
   vec3 p;
-  std::random_device rd; //random_device -> uniformly-distributed random no. generator
-  std::uniform_real_distribution<double> dist(0.0, 0.99); //a distribution of nos. between 0-0.99
   do{
     p = 2.0*vec3(drand48(), drand48(), drand48()) - vec3(1,1,1);
   }while (p.squared_length() >= 1.0);
@@ -164,8 +162,8 @@ int main()
       //Sum up ray colours for each random sample at each pixel
       for (int s = 0; s < ns; s++){
       
-              float u = (float(i) + float(drand48()) / float(nx);
-              float v = (float(j) + float(drand48())/ float(ny);
+              float u = (float(i) + float(drand48())) / float(nx);
+              float v = (float(j) + float(drand48()))/ float(ny);
               ray r = cam.get_ray(u, v);
               
               col += color(r, world, 1);
