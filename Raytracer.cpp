@@ -4,7 +4,8 @@
 #include "hitable_list.h"
 #include "camera.h"
 #include <float.h>
-#include <random>
+#include <stdlib.h>
+
 
 
 /*
@@ -29,18 +30,73 @@ float hit_sphere(const vec3& center, float radius, const ray& r){
 }
 
 
+/* Chapter 7 - Diffuse Materials
+* Now that objects and multiple rays per pixel are implemented we can start simulating materials
+* Beginning with diffuse (matte) materials, we will treat shapes and materials
+* as individual items which can be mixed and matched e.g. we assign a material to a sphere
+* another option is to have the material  be dependent on the shape (useful if geometry is linked to material)
+*
+* Diffuse objects that don't emit light take on the colour of their surroundings
+* and then modulate the surrounding colour with their own intrinsic colour
+*
+* Light that reflects off a diffuse surface has its direction randomised
+* Rays may also be absorbed rather than reflected, the darker the surface the more likely absorption
+*
+* We need to implement an algorithm that randomises direction, one way is as follows
+* 1. Pick a random point s, from within a a sphere tangent to the ray hitpoint, p
+* 2. Send a ray from the hitpoint, p to the random point s,
+* 
+* The sphere has a radius of N, with the center (p+N)
+* 
+* We need a way to pick a random point in a unit radius sphere centered at the origin
+* to do this we'll use a rejection method, picking a random point in the unit cube (x,y,z range -1 to 1)
+* we reject the point and try again if it lies outside the unitsphere
+*
+*/
+
+
+/*        , - ~ ~ ~ - ,
+*    , '                ' ,
+*  ,                        ,
+* ,                          ,
+*,            (p+N)           ,
+*,             X     s        '
+*,             |    /         ,
+* , (radius N) |   /          ,
+*  ,           |  /          ,
+*    ,         | /        , '
+*      ' - , _ |/ _ , - '
+* -------------p---------------
+*             (hitpoint)
+*/
+
+//This function returns our random point (s) that falls within the unit sphere
+vec3 random_in_unit_sphere() {
+  vec3 p;
+  std::random_device rd; //random_device -> uniformly-distributed random no. generator
+  std::uniform_real_distribution<double> dist(0.0, 0.99); //a distribution of nos. between 0-0.99
+  do{
+    p = 2.0*vec3(drand48(), drand48(), drand48()) - vec3(1,1,1);
+  }while (p.squared_length() >= 1.0);
+  return p;
+}
+
 //Color function returns the colour of the background as a basic gradient
 //It blends white/blue depending on the up/down value of the rays y coordinate
 //t = 0 -> white / t = 1 -> blue
 //Known as linear interpolation (lerp), always take the form of (1-t)*start_value + t*end_value
 //Where t can be between 1 and 0
 
-vec3 color(const ray& r, hitable *world){
+
+//Chapter 7 - Updated to simulate diffuse materials
+vec3 color(const ray& r, hitable *world, int count){
 
   hit_record rec; //Details of ray collision
   
-  if(world->hit(r, 0.0, FLT_MAX, rec)) //If ray hits
-    return 0.5*vec3(rec.normal.x()+1, rec.normal.y()+1, rec.normal.z()+1); //Determine colour using normal
+  if(world->hit(r, 0.0, FLT_MAX, rec)){ //If ray hits
+    vec3 target = rec.p + rec.normal + random_in_unit_sphere();
+    return 0.5*color(ray(rec.p, target-rec.p), world, count+1);
+  }
   else{
     //No - determine background colour
     vec3 unit_direction = unit_vector(r.direction()); //Convert the direction of the ray into a unit vector (magnitude of 1)
@@ -93,11 +149,7 @@ int main()
   */
   
   camera cam;
-  
-  //Random no. generator for anti-aliasing samples
-  std::random_device rd; //random_device -> uniformly-distributed random no. generator
-  std::uniform_real_distribution<double> dist(0.0, 0.99); //a distribution of nos. between 0-0.99
-  
+
   
   int ns = 100; //no. of samples to take per pixel
   
@@ -112,11 +164,11 @@ int main()
       //Sum up ray colours for each random sample at each pixel
       for (int s = 0; s < ns; s++){
       
-              float u = (float(i) + float(dist(rd))) / float(nx);
-              float v = (float(j) + float(dist(rd)))/ float(ny);
+              float u = (float(i) + float(drand48()) / float(nx);
+              float v = (float(j) + float(drand48())/ float(ny);
               ray r = cam.get_ray(u, v);
               
-              col += color(r, world);
+              col += color(r, world, 1);
       
       }
       
