@@ -4,6 +4,7 @@
 #include "hitable_list.h"
 #include "camera.h"
 #include <float.h>
+#include "material.h"
 #include <stdlib.h>
 
 
@@ -55,16 +56,6 @@
 *             (hitpoint)
 */
 
-//This function returns our random point (s) that falls within the unit sphere
-vec3 random_in_unit_sphere() {
-  vec3 p;
-  std::random_device rd; //random_device -> uniformly-distributed random no. generator
-  std::uniform_real_distribution<double> dist(0.0, 0.99); //a distribution of nos. between 0-0.99
-  do{
-    p = 2.0*vec3(drand48(), drand48(), drand48()) - vec3(1,1,1);
-  }while (p.squared_length() >= 1.0);
-  return p;
-}
 
 //Color function returns the colour of the background as a basic gradient
 //It blends white/blue depending on the up/down value of the rays y coordinate
@@ -74,13 +65,22 @@ vec3 random_in_unit_sphere() {
 
 
 //Chapter 7 - Updated to simulate diffuse materials
-vec3 color(const ray& r, hitable *world){
+vec3 color(const ray& r, hitable *world, int depth){
 
   hit_record rec; //Details of ray collision
   
-  if(world->hit(r, 0.0, FLT_MAX, rec)){ //If ray hits
-    vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-    return 0.5*color(ray(rec.p, target-rec.p), world);
+  //Is there a collision?
+  if(world->hit(r, 0.001, MAXFLOAT, rec)){ //If ray hits
+	ray scattered; 
+	vec3 attenuation;
+	//Material interactions for 50 iterations and if ray scatters and is not absorbed
+	//Results of scatter function depend on type of material
+	if(depth < 50 && rec.mat_ptr->scatter(r, rec,attenuation, scattered)){
+		return attenuation*color(scattered, world, depth+1);
+	}
+	else{
+		return vec3(0,0,0);
+	}
   }
   else{
     //No - determine background colour
@@ -92,7 +92,7 @@ vec3 color(const ray& r, hitable *world){
 
 int main()
 {
-	//Start  by generating ppm files
+  //Start  by generating ppm files
 
   //Image dimensions
 	int nx = 200; //width
@@ -114,11 +114,14 @@ int main()
 	vec3 horizontal(4.0, 0.0, 0.0);
 	vec3 vertical(0.0, 2.0, 0.0);
 	
-	//List of 2 hitable objects
-	hitable* list[2]; 
-	list[0] = new sphere(vec3(0,0,-1), 0.5);
-	list[1] = new sphere(vec3(0, -100.5, -1), 100);
-	hitable *world = new hitable_list(list, 2); //Create a "world" containing these objects
+	//List of 4  hitable objects
+	//Chapter 8 - 2 Lambertian Spheres / 2 Metal Spheres
+	hitable* list[4]; 
+	list[0] = new sphere(vec3(0,0,-1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
+	list[1] = new sphere(vec3(0,-100.5,-1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
+	list[2] = new sphere(vec3(1,0,-1), 0.5, new metal(vec3(0.8, 0.6, 0.2)));
+	list[3] = new sphere(vec3(-1,0,-1), 0.5, new metal(vec3(0.8, 0.6, 0.8)));
+	hitable *world = new hitable_list(list, 4); //Create a "world" containing these objects
 
 
   //Chapter 6 - Anti-aliasing
@@ -147,11 +150,11 @@ int main()
       //Sum up ray colours for each random sample at each pixel
       for (int s = 0; s < ns; s++){
       
-              float u = (float(i) + float(drand48()) / float(nx);
-              float v = (float(j) + float(drand48())/ float(ny);
+              float u = float(i) + float(drand48()) / float(nx);
+              float v = float(j) + float(drand48())/ float(ny);
               ray r = cam.get_ray(u, v);
               
-              col += color(r, world);
+              col += color(r, world, 0);
       
       }
       

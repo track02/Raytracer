@@ -52,6 +52,9 @@ public:
     //A unit vector is a normalised vector, magnitude of 1
     inline void make_unit_vector();
     
+    //Reflection
+    inline vec3 reflect(const vec3& v, const vec3& n);
+    
     
     float e[3];
 };
@@ -180,3 +183,4 @@ inline vec3& vec3::operator/=(const float t) {
 inline vec3 unit_vector(vec3 v) {
     return v / v.length();
 }
+
