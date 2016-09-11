@@ -64,7 +64,7 @@ class material{
  */
   
  //Attenuation - rays attenuate (decrease in intensity) as they are scattered or reflected
- //
+ //Albedo - reflective coefficient, multiply colour vector by albedo to reflect loss of ray intensity
  
  class lambertian : public material{
 	 
