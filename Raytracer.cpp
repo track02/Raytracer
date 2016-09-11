@@ -70,7 +70,7 @@ vec3 color(const ray& r, hitable *world, int depth){
   hit_record rec; //Details of ray collision
   
   //Is there a collision?
-  if(world->hit(r, 0.001, MAXFLOAT, rec)){ //If ray hits
+  if(world->hit(r, 0.001, FLT_MAX, rec)){ //If ray hits
 	ray scattered; 
 	vec3 attenuation;
 	//Material interactions for 50 iterations and if ray scatters and is not absorbed
@@ -113,14 +113,13 @@ int main()
 	//Modify the direction by adding the horizontal / vertical vectors 
 	vec3 horizontal(4.0, 0.0, 0.0);
 	vec3 vertical(0.0, 2.0, 0.0);
-	
 	//List of 4  hitable objects
 	//Chapter 8 - 2 Lambertian Spheres / 2 Metal Spheres
 	hitable* list[4]; 
 	list[0] = new sphere(vec3(0,0,-1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
 	list[1] = new sphere(vec3(0,-100.5,-1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
 	list[2] = new sphere(vec3(1,0,-1), 0.5, new metal(vec3(0.8, 0.6, 0.2)));
-	list[3] = new sphere(vec3(-1,0,-1), 0.5, new metal(vec3(0.8, 0.6, 0.8)));
+	list[3] = new sphere(vec3(-1,0,-1), 0.5, new metal(vec3(0.8, 0.8, 0.8)));
 	hitable *world = new hitable_list(list, 4); //Create a "world" containing these objects
 
 
@@ -150,8 +149,8 @@ int main()
       //Sum up ray colours for each random sample at each pixel
       for (int s = 0; s < ns; s++){
       
-              float u = float(i) + float(drand48()) / float(nx);
-              float v = float(j) + float(drand48())/ float(ny);
+              float u = float(i + drand48()) / float(nx);
+              float v = float(j + drand48())/ float(ny);
               ray r = cam.get_ray(u, v);
               
               col += color(r, world, 0);
@@ -160,6 +159,7 @@ int main()
       
       //Divide colour by total no. samples for an average
       col /= ns;
+      col = vec3(sqrt(col.r()), sqrt(col.g()), sqrt(col.b()));
       
       //Convert to integer
       int ir = int(255.99 * col.r());
@@ -167,7 +167,7 @@ int main()
       int ib = int(255.99 * col.b());
 
 			//Output in format R G B
-			std::cout << ir << " " << ig << " " << ib << "\n";
+		std::cout << ir << " " << ig << " " << ib << "\n";
 
 		}
 	}
