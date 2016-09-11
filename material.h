@@ -62,8 +62,9 @@ class material{
  * 
  * This is implemented as a simple class which derives from the virtual abstract material class
  */
- 
-
+  
+ //Attenuation - rays attenuate (decrease in intensity) as they are scattered or reflected
+ //
  
  class lambertian : public material{
 	 
@@ -98,9 +99,9 @@ class material{
  *                 \|
  * 
  * The reflected ray direction (r) is equal to the inital ray (v) + 2B
- * N (normal) is a unit vector, but v may not be
+ * N (surfacenormal) is a unit vector, but v may not be
  * So the length of B should be dot(v,N)
- * Because v points inwards a minus sign is used giving the following function
+ * Because v points inwards a minus sign is used, giving the following function
  */ 
 
 

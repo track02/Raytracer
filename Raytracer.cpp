@@ -67,16 +67,19 @@
 //Chapter 7 - Updated to simulate diffuse materials
 vec3 color(const ray& r, hitable *world, int depth){
 
-  hit_record rec; //Details of ray collision
+  hit_record rec; //Holds details of whatever object ray has hit
   
   //Is there a collision?
-  if(world->hit(r, 0.001, FLT_MAX, rec)){ //If ray hits
-	ray scattered; 
+  if(world->hit(r, 0.001, FLT_MAX, rec)){ //If ray hits, hit record will be updated
+	ray scattered; //Resulting ray from material interaction
+	
+	//Attenuation is a value less than 1, unless perfect reflective surface
+	//Reflects the loss of ray intensity as it is (repeatedly) reflected and scattered
 	vec3 attenuation;
 	//Material interactions for 50 iterations and if ray scatters and is not absorbed
-	//Results of scatter function depend on type of material
+	//Actual results of scatter function depend on type of material
 	if(depth < 50 && rec.mat_ptr->scatter(r, rec,attenuation, scattered)){
-		return attenuation*color(scattered, world, depth+1);
+		return attenuation*color(scattered, world, depth+1); //Multiply current attenuation value with results from next iteration using the new scattered ray
 	}
 	else{
 		return vec3(0,0,0);
