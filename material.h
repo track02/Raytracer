@@ -43,7 +43,30 @@ struct hit_record;
 }
  
 
-//Reflect function - see metal
+//Reflect function - for reflective materials
+
+/*
+* Example using 2D Surface
+* ray_in [v] = (1,-1), travelling right/down
+* normal [n] = (0,1), vertical up
+* ray_out [r] = (1,1), travelling right/up
+*     
+*     (v)  (n)   (r)
+*      \    |    /
+*       \   |   /
+*        \  |  /
+*         \ | /
+*      ____\|/______ (surface)
+*
+* r = v-2(v*n)n
+* = (1,-1) - 2*((1,-1)*(0,1))*(0,1)
+* = (1,-1) - 2*(0,-1)*(0,1) 
+* = (1,-1) - (-(0,2))
+* = (1,-1) + (0,2)
+* = (1,1)
+*/
+
+
 inline vec3 reflect(const vec3& v, const vec3& n){
 	return v - 2*dot(v,n)*n;
 }
