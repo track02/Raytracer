@@ -34,4 +34,4 @@ Currently aiming to complete 1-2 Chapters per week, all created images to be dis
 
 #Reflective Materials
 
-![Reflective Materials](https://github.com/track02/Raytracer/blob/master/Images/Lambertian_Metal_Materials.png)
+![Reflective Materials](https://github.com/track02/Raytracer/blob/master/Images/Metals_Fuzzy_Reflection.png)
