@@ -103,19 +103,30 @@ class material{
  * So the length of B should be dot(v,N)
  * Because v points inwards a minus sign is used, giving the following function
  */ 
+ 
+ //Perfect reflection isn't likely, so we'll randomise the reflected direction by
+ //using a small sphere and picking a new endpoint for the ray
+ 
+ //Larger spheres produce more fuzzy reflections, to accomplish this a fuzziness parameter
+ //will be added, that is just the radius of the sphere, where zero fuzziness is perfect reflection
+ //Note: large spheres may cause light to scatter beneath the reflecting surface 
+ //i.e. sphere radius is so large it passes inside the surface, in this case 
+ //we'll have the surface absorb those scattered rays
+ //A hard limit of 1 for the sphere radius will be used
 
 
 class metal : public material {
 	public:
-		metal(const vec3& a) : albedo(a) {}
+		metal(const vec3& a, float f) : albedo(a) {if (f < 1) fuzz = f; else fuzz = 1;}
 		virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const{			
 			vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal); //direction of reflected ray
-			scattered = ray(rec.p, reflected); //Create a scattered ray using origin of r_in and reflected direction
+			scattered = ray(rec.p, reflected + fuzz*random_in_unit_sphere()); //Create a scattered ray using origin of r_in and reflected direction multiplied by fuzz value
 			attenuation = albedo;
 			return (dot(scattered.direction(), rec.normal) > 0);
 			
 		}
 		
 		vec3 albedo;
+		float fuzz;
 };
 
