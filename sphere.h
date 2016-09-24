@@ -37,12 +37,12 @@
 * If we expand the equation and move all terms to the left hand side, we get:
 * t*t*dot(B,B) + 2*t*dot(B,A-C) + dot(A-C,A-C) - R*R = 0
 *
-* We end up a quadratic equation with an unknown value of t
+* We end up with a quadratic equation with an unknown value of t
 * Solving for t, we can use the discriminant to determine the number of roots (+'ve -> 2 / -'ve -> 0 / 0 -> 1)
 *
 *  -----------------------------> 0 Roots
 *
-*  ---- o X o ------------------> 1 Root
+*  ---- o X o ------------------> 1 Root (Glancing)
 *     o        o       
 * ---X----------X----------------> 2 Roots      
 *    o          o      
