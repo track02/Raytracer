@@ -104,6 +104,66 @@ class material{
 };
 
 
+//Dielectrics - Chapter 8
+/* Clear materials, such as water, glass and diamonds are called dielectrics.
+ * When a light ray hits them it splits into a reflected and refracted (transmitted) ray
+ *  
+ * This can be handled by randomly choosing between reflection or refraction
+ * and only generating one scattered ray per interaction. 
+ * 
+ */
+ 
+ 
+ /* Refraction
+  * 
+  * Refraction is the bending of a wave as it enters a medium
+  * where its speed is different.
+  * 
+  * Index of Refraction - the speed of light in vacuum / speed of light in the medium
+  *  
+  * 
+  * 
+  *          N     x
+  *          |    /
+  *          |a2 /          medium 
+  * 		 |  /	 		refraction index, n2      
+  * 		 | /  			angle, a2
+  *          |/       
+  *  --------x---------
+  *         /| 
+  *        / | 
+  *       /  |              medium
+  *      / a1|              refraction index, n1
+  *     /    |              angle, a1
+  *    x     N
+  * 
+  * Note: N -> Normal / n -> Refraction Index
+  * 
+  * We can use snells law to examine refraction, the law relates the index of refraction
+  * of the two media to the direction of propagation (in terms of angles to the normal)
+  * 
+  * n1 / n2 = sin a2 / sin a1
+  * 
+  * If the incident medium has the larger refraction index then the angle
+  * with the normal is increased by refraction, if the incident medium has the
+  * smaller refraction index the resulting refraction angle is decreased.
+  * 
+  * Incident Ray - a ray of light that strikes a surface
+  * Incident Angle - angle between a ray incident on a surface and the normal.
+  * Critical Angle - The angle of incidence beyond which rays of light passing through a denser medium 
+  *                  to the surface of a less dense medium are no longer refracted but totally reflected
+  * 
+  * Total Internal Reflection - The complete reflection of a light ray reaching an interface with 
+  *                             a less dense medium when the angle of incidence exceeds the critical angle.
+  * 
+  * Total Internal Reflection is an issue, and is caused when the ray is inside materials
+  * of high refractive index, so high that the ray is reflected past the critical angle back into the medium
+  * 
+  * This can occur when submerged underwater and the water-air boundary acts as a mirror.
+  * 
+  * /
+
+
 //Reflection - Chapter 8
 //For smooth metals rays are not randomly scattered instead they are reflected 
 
