@@ -144,6 +144,10 @@ class material{
   * 
   * n1 / n2 = sin a2 / sin a1
   * 
+  *  
+  * 
+  * 
+  * 
   * If the incident medium has the larger refraction index then the angle
   * with the normal is increased by refraction, if the incident medium has the
   * smaller refraction index the resulting refraction angle is decreased.
@@ -163,6 +167,8 @@ class material{
   * 
   */
 
+//Refract takes in incident vector, normal vector, refraction index ratio
+//Updates the refracted vector and returns true / false if refraction occurs
 bool refract(const vec3& v, const vec3& n, float ni_over_nt, vec3& refracted){
 	vec3 uv = unit_vector(v);
 	float dt = dot(uv, n); 
@@ -177,11 +183,11 @@ bool refract(const vec3& v, const vec3& n, float ni_over_nt, vec3& refracted){
 
 class dielectric : public material{
 	public:
-		dielectric(float ri) : ref_idx(ri) {}
+		dielectric(float ri) : ref_idx(ri) {} //ri - refractive index
 		virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const {
 			vec3 outward_normal;
-			vec3 reflected = reflect(r_in.direction(), rec.normal);
-			float ni_over_nt;
+			vec3 reflected = reflect(r_in.direction(), rec.normal); //Determine direction if ray were reflected
+			float ni_over_nt; 
 			attenuation = vec3(1.0,1.0,1.0);
 			vec3 refracted;
 			if(dot(r_in.direction(), rec.normal) > 0){
