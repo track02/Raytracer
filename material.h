@@ -143,16 +143,14 @@ class material{
   * of the two media to the direction of propagation (in terms of angles to the normal)
   * 
   * n1 / n2 = sin a2 / sin a1
-  * 
   *  
-  * 
   * 
   * 
   * If the incident medium has the larger refraction index then the angle
   * with the normal is increased by refraction, if the incident medium has the
   * smaller refraction index the resulting refraction angle is decreased.
   * 
-  * Incident Ray - a ray of light that strikes a surface
+  * Incident Ray - incoming ray of light that strikes a surface
   * Incident Angle - angle between a ray incident on a surface and the normal.
   * Critical Angle - The angle of incidence beyond which rays of light passing through a denser medium 
   *                  to the surface of a less dense medium are no longer refracted but totally reflected
@@ -166,6 +164,59 @@ class material{
   * This can occur when submerged underwater and the water-air boundary acts as a mirror.
   * 
   */
+  
+  /* Further Refraction Notes
+   * 
+   * A ray strikes a surface and is either reflected off it or refracted through it
+   * There are two mediums separating the surface on each side, each medium has a refractive index
+   * 
+   * N1 -> refractive index of the material you come from
+   * N2 -> refractive index of the material you go to
+   *  
+   * The direction of the incoming ray (incident ray) is i, and assumed to be normalised
+   * the direction of reflected and refracted rays are r and t (transmitted) and need to be calculated
+   * these vectors (r,t) are also normalised. There is also the normal vector n, which
+   * is orthogonal to the surface and points towards the first material/medium N1, 
+   * we also assume that n is normalised.
+   * 
+   * This gives us:
+   * |i| = |r| = |t| = |n| = 1
+   * 
+   * 
+   *   (i)     (n)     (r)
+   *     \      |      /
+   *      \     |     /
+   *       \    |    /
+   *        \   |   /
+   *         \  |  /
+   *          \ | /
+   *  ----------O-------------------
+   *              \
+   *               \
+   *                \
+   *                 \
+   *                  \
+   *                  (t)
+   * 
+   * 
+   * The calculation of the refracted ray begins with snells law which tells us
+   * that the products of refractive indices and the sin of angles must be equal
+   * 
+   * N1*Sin(Ai) = N2*Sin(At)
+   * 
+   * We can rewrite this as
+   * 
+   * Sin(At) = N1 / N2 * Sin(Ai)
+   * 
+   * There's a problem here when Sin(Ai) > N2/N1
+   * This would mean Sin(At) need to be greater than 1 which isn't possible
+   * This scenario is known as Total Internal Reflection, to get around this
+   * we can add a condition to Snell's Law
+   * 
+   * Sin(At) = N1 / N2 * Sin(Ai) <-> Sin(Ai) <= N2/N1
+   * 
+   * / 
+  
 
 //Refract takes in incident vector, normal vector, refraction index ratio
 //Updates the refracted vector and returns true / false if refraction occurs
@@ -178,14 +229,14 @@ bool refract(const vec3& v, const vec3& n, float ni_over_nt, vec3& refracted){
 		return true;
 	}
 	else
-		return false;	
+		return false;	//No refraction occurs
 }
 
 class dielectric : public material{
 	public:
-		dielectric(float ri) : ref_idx(ri) {} //ri - refractive index
+		dielectric(float ri) : ref_idx(ri) {} //ri - refractive index of material
 		virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const {
-			vec3 outward_normal;
+			vec3 outward_normal;  
 			vec3 reflected = reflect(r_in.direction(), rec.normal); //Determine direction if ray were reflected
 			float ni_over_nt; 
 			attenuation = vec3(1.0,1.0,1.0);
