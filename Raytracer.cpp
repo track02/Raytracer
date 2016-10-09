@@ -116,16 +116,20 @@ int main()
 	//Modify the direction by adding the horizontal / vertical vectors 
 	vec3 horizontal(4.0, 0.0, 0.0);
 	vec3 vertical(0.0, 2.0, 0.0);
+
 	//List of 4  hitable objects
 	//Chapter 8 - 2 Lambertian Spheres / 2 Metal Spheres
+	//Chapter 9 - Dielectrics
+	//Chapter 10 - Adjustble camera
+	float R = cos(M_PI/4);
+	
 	hitable* list[5]; 
 	list[0] = new sphere(vec3(0,0,-1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
 	list[1] = new sphere(vec3(0,-100.5,-1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
 	list[2] = new sphere(vec3(1,0,-1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.3));
 	list[3] = new sphere(vec3(-1,0,-1), 0.5, new dielectric(1.5));
 	list[4] = new sphere(vec3(-1,0,-1), -0.45, new dielectric(1.5));
-	hitable *world = new hitable_list(list, 5); //Create a "world" containing these objects
-
+	hitable *world = new hitable_list(list, 5); //Create a "world" containing these objects */
 
   //Chapter 6 - Anti-aliasing
   /*
@@ -137,8 +141,8 @@ int main()
   * of the samples, the colours of these rays is then averaged
   */
   
-  camera cam;
-
+  //camera cam(vec3(-2,2,1), vec3(0,0,-1), vec3(0,1,0), 90, float(nx)/float(ny));
+  camera_old cam;
   
   int ns = 100; //no. of samples to take per pixel
   
@@ -158,7 +162,6 @@ int main()
               ray r = cam.get_ray(u, v);
               
               col += color(r, world, 0);
-      
       }
       
       //Divide colour by total no. samples for an average
@@ -170,7 +173,7 @@ int main()
       int ig = int(255.99 * col.g());
       int ib = int(255.99 * col.b());
 
-			//Output in format R G B
+		//Output in format R G B
 		std::cout << ir << " " << ig << " " << ib << "\n";
 
 		}

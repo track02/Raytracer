@@ -214,15 +214,14 @@ class material{
    * we can add a condition to Snell's Law
    * 
    * Sin(At) = N1 / N2 * Sin(Ai) <-> Sin(Ai) <= N2/N1
-   */ 
-  
+   */   
 
 //Refract takes in incident vector, normal vector, refraction index ratio
 //Updates the refracted vector and returns true / false if refraction occurs
 bool refract(const vec3& v, const vec3& n, float ni_over_nt, vec3& refracted){
 	
-	vec3 uv = unit_vector(v); //Normalise incident vector
-	float dt = dot(uv, n);  //Multiply by normal
+	vec3 uv = unit_vector(v); //Unit vector - direction of incident vector
+	float dt = dot(uv, n);  //Multiply unit vector by normal
 	
 	//If the discriminant is >0 there is a collision
 	//1 - (N1/N2)^2 * (1 - dt^2)
