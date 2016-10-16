@@ -107,16 +107,6 @@ int main()
 	//255 <-- Max possible values of 255 for a colour
 	std::cout << "P3\n" << nx << " " << ny << "\n255\n";
 	
-	//The origin is the eye/camera where rays originate from
-	vec3 origin(0.0, 0.0, 0.0);
-	
-	//Initial direction of rays is the lower left corner
-	vec3 lower_left_corner(-2.0, -1.0, -1.0);
-	
-	//Modify the direction by adding the horizontal / vertical vectors 
-	vec3 horizontal(4.0, 0.0, 0.0);
-	vec3 vertical(0.0, 2.0, 0.0);
-
 	//List of 4  hitable objects
 	//Chapter 8 - 2 Lambertian Spheres / 2 Metal Spheres
 	//Chapter 9 - Dielectrics
@@ -141,8 +131,7 @@ int main()
   * of the samples, the colours of these rays is then averaged
   */
   
-  //camera cam(vec3(-2,2,1), vec3(0,0,-1), vec3(0,1,0), 90, float(nx)/float(ny));
-  camera_old cam;
+  camera cam(vec3(-2,2,1), vec3(0,0,-1), vec3(0,1,0), 90, float(nx)/float(ny));
   
   int ns = 100; //no. of samples to take per pixel
   
