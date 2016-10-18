@@ -35,3 +35,9 @@ Currently aiming to complete 1-2 Chapters per week, all created images to be dis
 #Reflective Materials
 
 ![Reflective Materials](https://github.com/track02/Raytracer/blob/master/Images/Metals_Fuzzy_Reflection.png)
+
+#Adjustable FoV
+![Adjustable FoV](https://github.com/track02/Raytracer/blob/master/Images/fov_camera.png)
+
+#Camera Positioning
+![Camera Positioning](https://github.com/track02/Raytracer/blob/master/Images/lookat_camera.png)
