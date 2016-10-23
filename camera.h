@@ -69,12 +69,78 @@
   *  Our arbitrary view camera now faces -w. We can use world up (0,1,0) to specify vup. This is convenient and 
   *  should help keep the camera level.
   */      
+  
+  
+  /* Chapter 11 - Defocus Blur (Depth of Field)
+   * In a real camera a lens is in place between the film and an object plane we're looking at
+   * The distance to that plane where things are in focus is controlled by the distance between 
+   * the lens and the film. The aperture of a camera controls have big the lens is effectively, if 
+   * more light is needed the aperture is made bigger.
+   * 
+   * For our virtual camera we have perfect film/sensor and never need more light so
+   * we only have an apeture when we want defocus blur.
+   * 
+   * For our raytracer we'll simulate the order: sensor, lens, aperture and figure out where
+   * to send the rays and flip the image once computer (the image is projected upside-down on the film)
+   * In graphics a thin lens approximation is usually used.
+   * 
+   * We'll start by sending rays from the surface of the lens and towards a virtual film plane.
+   * by find the projection of the film on the plane that is in focus (at the distance focus_dist).
+   * 
+   * 
+   * 
+   *   |                       |
+   *   |           ()          |
+   *   |        / (  ) \       |
+   *   |          (  )         |
+   *   |      /   (  )   \     |
+   *   |          (  )         |
+   *   |    /     (  )     \   |
+   *   |          (  )         |
+   *   |  /       (  )       \ |
+   *   |          (  )         |
+   *   |  \       (  )       / |
+   *   |          (  )         |
+   *   |    \     (  )     /   |
+   *   |          (  )         |
+   *   |      \   (  )   /     |
+   *   |          (  )         |
+   *   |        \ (  ) /       |
+   *   |           ()          |
+   *   |                       |
+   * (film)      (lens)    (focus plane)     
+   *              
+   *    <-----------|------------>
+   *        Inside     Outside
+   * 
+   * 
+   * 
+   *       ) \   |
+   *        ) \  |
+   *        )  \ |
+   * Lens   )___\| Virtual film plane at the focus plane.
+   *        )   /|
+   * 	    )  / |
+   * 	    ) /  |
+   *       ) /   |
+   * 
+   * For this we just need to have the ray origins be on a disk around
+   * loookfrom rather than from a point.
+   */
+
+vec3 random_in_unit_disk(){
+	vec3 p;
+	do {
+		p = 2.0 * vec3(drand48(), drand48(), 0) - vec3(1,1,0);
+	}while(dot(p,p) >= 1.0);
+	return p;	
+}
 
 class camera{
 
   public:
-	camera(vec3 lookfrom, vec3 lookat, vec3 vup, float vfov, float aspect) { // vfov is top to bottom in degrees
-		
+	camera(vec3 lookfrom, vec3 lookat, vec3 vup, float vfov, float aspect, float aperture, float focus_dist) { // vfov is top to bottom in degrees
+			lens_radius = aperture / 2;
             float theta = vfov*M_PI/180;
             float half_height = tan(theta/2);
             float half_width = aspect * half_height;
@@ -82,46 +148,23 @@ class camera{
             w = unit_vector(lookfrom - lookat);
             u = unit_vector(cross(vup, w));
             v = cross(w, u);
-            lower_left_corner = origin  - half_width*u -half_height*v - w;
-            horizontal = 2*half_width*u;
-            vertical = 2*half_height*v;
+            lower_left_corner = origin  - half_width*focus_dist*u -half_height*focus_dist*v - focus_dist*w;
+            horizontal = 2*half_width*focus_dist*u;
+            vertical = 2*half_height*focus_dist*v;
         }
     
 
         ray get_ray(float s, float t) {
-            return ray(origin, lower_left_corner + s*horizontal + t*vertical - origin); 
+			vec3 rd = lens_radius*random_in_unit_disk();
+			vec3 offset = u *rd.x() * v * rd.y();
+            return ray(origin, lower_left_corner + s*horizontal + t*vertical - origin - offset); 
         }
 
     vec3 origin;
+    float lens_radius;
     vec3 lower_left_corner;
     vec3 horizontal;
     vec3 vertical;
     vec3 u,v,w;
-};
-
-class camera_fov{
-
-  public:
-    camera_fov(float vfov, float aspect){
-     
-		float theta = vfov*M_PI/180;
-		float half_height = tan(theta/2);
-		float half_width = aspect * half_height;
-		origin = vec3(0.0,0.0,0.0);
-		lower_left_corner = vec3(-half_width, -half_height, -1.0);
-		horizontal = vec3(2*half_width, 0.0, 0.0);
-		vertical = vec3(0.0, 2*half_height, 0.0);
-      
-    }
-    
-    ray get_ray(float u, float v) {
-      return ray(origin, lower_left_corner + u*horizontal + v*vertical - origin);
-    }    
-
-    vec3 origin;
-    vec3 lower_left_corner;
-    vec3 horizontal;
-    vec3 vertical;
-
 };
 
