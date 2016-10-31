@@ -26,15 +26,18 @@ Currently aiming to complete 1-2 Chapters per week, all created images to be dis
 
 #Diffuse Materials (1)
 
-![Diffuse Materials](https://github.com/track02/Raytracer/blob/master/Images/ray_output_diffuse.png)
+![Diffuse Materials](https://github.com/track02/Raytracer/blob/master/Images/Ray_Output_Diffuse.png)
 
 #Diffuse Materials (2)
 
-![Diffuse Materials 2](https://github.com/track02/Raytracer/blob/master/Images/ray_output_diffuse_2.png)
+![Diffuse Materials 2](https://github.com/track02/Raytracer/blob/master/Images/Ray_Output_Diffuse_2.png)
 
-#Reflective Materials
+#Reflective Materials (1)
 
 ![Reflective Materials](https://github.com/track02/Raytracer/blob/master/Images/dielectric_material.png)
+
+#Reflective Materials (2) [Negative Radius]
+
 ![Reflective Materials](https://github.com/track02/Raytracer/blob/master/Images/dielectric_material_negative_radius.png)
 
 #Adjustable FoV
