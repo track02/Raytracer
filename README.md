@@ -2,7 +2,7 @@
 
 Development of a Raytracer, based on the book Ray Tracing in One Weekend, by Peter Shirley
 
-Currently aiming to complete 1-2 Chapters per week, all created images to be displayed below.
+Completed all chapters of the book - refraction needs to be reviewed in further detail.
 
 #Initial PPM Image
 
