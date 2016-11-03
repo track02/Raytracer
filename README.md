@@ -2,7 +2,13 @@
 
 Development of a Raytracer, based on the book Ray Tracing in One Weekend, by Peter Shirley
 
-Completed all chapters of the book - refraction needs to be reviewed in further detail.
+All chapters finished - TODO Next:
+
+- Clean up code
+- Re-read refraction and camera chapters, update notes 
+- Generate larger images (800x600)
+- Experiment with random scenes - update to allow command line args to be accepted
+
 
 #Initial PPM Image
 
