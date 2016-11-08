@@ -55,7 +55,7 @@ All chapters finished - TODO Next:
 #Depth of Field
 ![DoF](https://github.com/track02/Raytracer/blob/master/Images/Depth_of_Field.png)
 
-#Randomly generated scene
+#Randomly generated scene (Cover Image)
 
 ![Random](https://github.com/track02/Raytracer/blob/master/Images/Random_Scene.png)
 
