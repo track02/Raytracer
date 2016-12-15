@@ -126,8 +126,8 @@ class material{
   *          N     x
   *          |    /
   *          |a2 /          medium 
-  * 		 |  /	 		refraction index, n2      
-  * 		 | /  			angle, a2
+  * 	     |  /	    refraction index, n2      
+  * 	     | /  	    angle, a2
   *          |/       
   *  --------x---------
   *         /| 
