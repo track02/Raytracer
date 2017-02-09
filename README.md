@@ -2,8 +2,9 @@
 
 Development of a Raytracer, based on the book Ray Tracing in One Weekend, by Peter Shirley
 
-All chapters finished - TODO Next:
+Raytracer Completed
 
+-Possible Improvements:
 - Clean up code
 - Re-read refraction and camera chapters, update notes 
 - Generate larger images (800x600)
