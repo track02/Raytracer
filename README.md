@@ -4,7 +4,7 @@ Development of a Raytracer, based on the book Ray Tracing in One Weekend, by Pet
 
 Raytracer Completed
 
--Possible Improvements:
+Possible Improvements:
 - Clean up code
 - Re-read refraction and camera chapters, update notes 
 - Generate larger images (800x600)
